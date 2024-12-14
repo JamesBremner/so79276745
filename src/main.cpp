@@ -17,11 +17,14 @@ public:
     {
     }
     void locate(double x, double y);
+    void rotate(int quadrant);
 };
 struct sTriangle
 {
     std::vector<cBox> myBoxes;
+
     void pack(cBox &box);
+    void rotate(int index);
 };
 
 struct sProblem
@@ -52,6 +55,52 @@ void cBox::locate(double x, double y)
     xloc = x;
     yloc = y;
 }
+void cBox::rotate(int index)
+{
+
+    double temp;
+    switch (index)
+    {
+    case 0:
+    {
+        cxy br(xloc + x, yloc + y);
+        cxy ntl(-br.x, -br.y);
+        xloc = ntl.x;
+        yloc = ntl.y;
+    }
+    break;
+
+    case 1:
+    {
+        cxy tr(xloc + x, yloc);
+        cxy ntl(0, -tr.x);
+        xloc = ntl.x;
+        yloc = ntl.y;
+        temp = x;
+        x = y;
+        y = temp;
+    }
+    break;
+
+    case 2:
+        return;
+
+    case 3:
+    {
+        cxy bl(xloc, yloc + y);
+        cxy ntl(-bl.y, 0);
+        xloc = ntl.x;
+        yloc = ntl.y;
+        temp = x;
+        x = y;
+        y = temp;
+    }
+    break;
+    default:
+        throw std::runtime_error(
+            "sTriangle::rotate bad quadrant");
+    }
+}
 
 void sTriangle::pack(cBox &box)
 {
@@ -61,16 +110,22 @@ void sTriangle::pack(cBox &box)
         myBoxes.push_back(box);
     }
 }
+void sTriangle::rotate(int index)
+{
+    for (auto &B : myBoxes)
+        B.rotate(index);
+}
 
 void sProblem::genRandom(int min, int max, int count)
 {
-    srand(32);
+    srand(77);
     myTriDim = 50;
     myBoxes.clear();
     for (int k = 0; k < count; k++)
     {
         double x = rand() % (max - min) + min;
-        double y = rand() % (max - min) + min;
+        // double y = rand() % (max - min) + min;
+        double y = 2 * x;
         myBoxes.emplace_back(x, y);
     }
 }
@@ -89,6 +144,7 @@ void sProblem::sort()
 void sProblem::pack()
 {
     sort();
+
     for (int k = 0; k < myBoxes.size(); k += 4)
     {
         myTriangles[0].pack(myBoxes[k]);
@@ -96,6 +152,9 @@ void sProblem::pack()
         myTriangles[2].pack(myBoxes[k + 2]);
         myTriangles[3].pack(myBoxes[k + 3]);
     }
+
+    for (int q = 0; q < 4; q++)
+        myTriangles[q].rotate(q);
 }
 
 cGUI::cGUI(sProblem &P)
@@ -111,13 +170,12 @@ cGUI::cGUI(sProblem &P)
 void cGUI::draw(wex::shapes &S)
 {
     double scale = 400 / myP.myTriDim;
+    int xoff = myP.myTriDim;
+    int yoff = myP.myTriDim;
 
-    // for (int t = 0; t < 4; t++)
-    int t = 2;
+    for (int q = 0; q < 4; q++)
     {
-        int xoff = myP.myTriDim;
-        int yoff = myP.myTriDim;
-        for (auto &B : myP.myTriangles[t].myBoxes)
+        for (auto &B : myP.myTriangles[q].myBoxes)
         {
             cxy tl(scale * (B.xloc + xoff), scale * (B.yloc + yoff));
             cxy wh(scale * B.x, scale * B.y);
