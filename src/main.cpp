@@ -8,8 +8,14 @@
 #include "cGUI.h"
 #include "sProblem.h"
 
-cBox::cBox(double ix, double iy)
-    : wh(ix, iy)
+cBox::cBox( double ix, double iy)
+    : userID( -1 ),
+    wh(ix, iy)
+{
+}
+cBox::cBox(int id, double ix, double iy)
+    : userID( id ),
+    wh(ix, iy)
 {
 }
 
@@ -183,10 +189,12 @@ void sProblem::input(const std::string &sin)
     std::istringstream is(sin);
     int w, h;
     myBoxes.clear();
+    int userID = 0;
     is >> w >> h;
     while (is.good())
     {
-        myBoxes.emplace_back(w, h);
+        myBoxes.emplace_back(userID, w, h);
+        userID++;
         is >> w >> h;
     }
 }
@@ -198,7 +206,9 @@ std::string sProblem::output() const
     {
         for (auto &B : myQuads[q].myBoxes)
         {
-        ss << B.loc.x << " " << B.loc.y << "\n";
+            ss << B.userID << " "
+                << B.loc.x << " " 
+                << B.loc.y << "\n";
         }
     }
     return ss.str();
@@ -285,7 +295,7 @@ bool sProblem::test()
 
     auto output = T.output();
 
-    if( output != "-32 -19\n0 -5\n")
+    if( output != "1 -32 -19\n0 0 -5\n")
         return false;
 
     return true;

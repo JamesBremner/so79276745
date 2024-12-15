@@ -1,13 +1,18 @@
 #pragma once
 
-class cBox {
+class cBox
+{
 public:
-    cxy wh;         // width/height
-    cxy loc;        // location ( top right in quadrant 3 )
+    cxy wh;     // width/height
+    cxy loc;    // location ( top right in quadrant 3 )
+    int userID; // zero-based line number from input string
 
     /// @brief CTOR
+    /// @param id for user
     /// @param ix width
     /// @param iy height
+
+    cBox(int id, double ix, double iy);
 
     cBox(double ix, double iy);
 
@@ -15,13 +20,12 @@ public:
     void locate(double x, double y);
 
     // locate box on top of another ( no size change )
-    void locate(const cBox& other );
+    void locate(const cBox &other);
 
     // rotate box from 3rd quadrant to specified quad
     void rotate(int quadrant);
 
-
-    cxy topright()const ;
+    cxy topright() const;
     cxy bottomright() const;
     cxy bottomleft() const;
 };
@@ -80,20 +84,26 @@ struct sProblem
 \pre
 
     */
-    void input( const std::string& sin );
+    void input(const std::string &sin);
 
-/**
- * @brief Output box packed locations
- * 
- * @return std::string  One box per line: x y
- * 
- */
+    /**
+     * @brief Output box packed locations
+     *
+     * @return std::string  One box per line: id x y
+     *
+     *  The id is the zero-based line number when the box dimensions
+     * were input from string.
+     * 
+     * Note: the boxes are output in a different order than they were input.
+     * The output is quadrant by quadrant.
+     */
     std::string output() const;
 
     /// @brief generate randomly some boxes to be packed
     /// @param min minimum magnitude of any dimension
     /// @param max maximum magnitude of any dimension
     /// @param count number of boxes to generate
+
     void genRandom(int min, int max, int count);
 
     /// @brief sort boxes into decreasing volume
