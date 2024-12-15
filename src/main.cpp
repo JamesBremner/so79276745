@@ -181,6 +181,19 @@ cxy sQuadrant::maxBottomRight()
     return ret;
 }
 
+void sProblem::input(const std::string &sin)
+{
+    std::istringstream is(sin);
+    int w, h;
+    myBoxes.clear();
+    is >> w >> h;
+    while (is.good())
+    {
+        myBoxes.emplace_back(w, h);
+        is >> w >> h;
+    }
+}
+
 void sProblem::genRandom(int min, int max, int count)
 {
     srand(77);
@@ -241,6 +254,19 @@ void sProblem::pack()
         myQuads[q].rotate(q);
 }
 
+bool sProblem::test()
+{
+    sProblem T;
+    T.input(
+        "5 8\n"
+        "32 19\n");
+    if( T.myBoxes.size() != 2 )
+        return false;
+    if( T.myBoxes[1].wh.x != 32 )
+        return false;
+    return true;
+}
+
 cGUI::cGUI(sProblem &P)
     : cStarterGUI(
           "Packer",
@@ -271,6 +297,11 @@ void cGUI::draw(wex::shapes &S)
 main()
 {
     sProblem P;
+    if( ! P.test() )
+    {
+        std::cout << "Unit tests failed\n";
+        exit(1);
+    }
     P.genRandom(2, 10, 50);
     P.pack();
     cGUI theGUI(P);

@@ -66,6 +66,19 @@ struct sProblem
 
     sProblem();
 
+    /** @brief Input box sizes from string
+    /// @param sin the string to parse
+    Each box on its own line, width, space, height
+    example:
+\pre
+5 8
+32 19
+...
+\pre
+
+    */
+    void input( const std::string& sin );
+
     /// @brief generate randomly some boxes to be packed
     /// @param min minimum magnitude of any dimension
     /// @param max maximum magnitude of any dimension
@@ -77,4 +90,6 @@ struct sProblem
 
     /// @brief pack all the boxes
     void pack();
+
+    bool test();
 };
