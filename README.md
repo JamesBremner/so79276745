@@ -20,7 +20,7 @@ Use a standard bin packing algorithm to pack each triangle with its assigned rec
 
 # Result
 
-Here is how to looks with 50 boxes of random sizes
+Here is how it looks with 50 boxes of random sizes
 
 ![image](https://github.com/user-attachments/assets/926e7808-bbc3-4b26-85f3-1f22ad02ff40)
 
