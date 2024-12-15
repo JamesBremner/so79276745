@@ -8,15 +8,13 @@ How to pack those rectangles around center point - like this:
 
 # Algorithm
 
-Divide the area around the central point into 4 traingles of equal area, like this
+Divide the area around the central point into 4 quadrants.
 
-![image](https://github.com/user-attachments/assets/3424ea8d-c402-4261-9ab3-e6592dbc6b74)
+Divide the rectangles into 4 subsets of approximately equal total area.
 
-The total area of the four triangles should equal the total area of of the rectangles plus, say, 10%.
+Use a standard bin packing algorithm to pack each quadrant with its assigned rectangles.
 
-Divide the rectangles into 4 subsets of equal total area.
-
-Use a standard bin packing algorithm to pack each triangle with its assigned rectangles.
+A more detailed description is available here https://github.com/JamesBremner/so79276745/wiki/Algorithm
 
 # Result
 
