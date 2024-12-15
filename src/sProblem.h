@@ -1,17 +1,27 @@
-class cBox : public cxy
-{
+class cBox {
 public:
-    double xloc, yloc;
+    cxy wh;         // width/height
+    cxy loc;        // location ( top right in quadrant 3 )
 
     /// @brief CTOR
     /// @param ix width
     /// @param iy height
 
     cBox(double ix, double iy);
+
+    // locate box at point x,y
     void locate(double x, double y);
+
+    // locate box on top of another ( no size change )
+    void locate(const cBox& other );
+
+    // rotate box from 3rd quadrant to specified quad
     void rotate(int quadrant);
-    cxy topright();
-    cxy bottomright();
+
+
+    cxy topright()const ;
+    cxy bottomright() const;
+    cxy bottomleft() const;
 };
 /**
  * The 2D space around the central point is divided into 4 quadrants

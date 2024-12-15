@@ -20,39 +20,39 @@ private:
 };
 
 cBox::cBox(double ix, double iy)
-    : cxy(ix, iy)
+    : wh(ix, iy)
 {
 }
 
 void cBox::locate(double x, double y)
 {
-    xloc = x;
-    yloc = y;
+    loc = cxy(x,y);
+}
+void cBox::locate(const cBox& other )
+{
+    loc = other.loc;
 }
 void cBox::rotate(int index)
 {
-
     double temp;
     switch (index)
     {
     case 0:
     {
-        cxy br(xloc + x, yloc + y);
+        cxy br = bottomright();
         cxy ntl(-br.x, -br.y);
-        xloc = ntl.x;
-        yloc = ntl.y;
+        loc = ntl;
     }
     break;
 
     case 1:
     {
-        cxy tr(xloc + x, yloc);
+        cxy tr = topright();
         cxy ntl(tr.y, -tr.x);
-        xloc = ntl.x;
-        yloc = ntl.y;
-        temp = x;
-        x = y;
-        y = temp;
+        loc = ntl;
+        temp = wh.x;
+        wh.x = wh.y;
+        wh.y = temp;
     }
     break;
 
@@ -61,13 +61,12 @@ void cBox::rotate(int index)
 
     case 3:
     {
-        cxy bl(xloc, yloc + y);
+        cxy bl = bottomleft();
         cxy ntl(-bl.y, bl.x);
-        xloc = ntl.x;
-        yloc = ntl.y;
-        temp = x;
-        x = y;
-        y = temp;
+        loc = ntl;
+        temp = wh.x;
+        wh.x = wh.y;
+        wh.y = temp;
     }
     break;
     default:
@@ -75,13 +74,17 @@ void cBox::rotate(int index)
             "sTriangle::rotate bad quadrant");
     }
 }
-cxy cBox::bottomright()
+cxy cBox::bottomright() const
 {
-    return cxy(xloc + x, yloc + y);
+    return cxy(loc.x + wh.x, loc.y + wh.y);
 }
-cxy cBox::topright()
+cxy cBox::topright() const
 {
-    return cxy(xloc + x, yloc);
+    return cxy(loc.x + wh.x, loc.y);
+}
+cxy cBox::bottomleft() const
+{
+    return cxy(loc.x,loc.y+wh.y);
 }
 
 sQuadrant::sQuadrant()
@@ -96,9 +99,9 @@ int sQuadrant::findBestSpace(const cBox &box)
         return 0;
     for( int s = 0; s < mySpaces.size(); s++ )
     {
-        if( mySpaces[s].xloc<0)
+        if( mySpaces[s].loc.x<0)
             continue;
-        if( mySpaces[s].y >= box.y )
+        if( mySpaces[s].wh.y >= box.wh.y )
             return s;
     }
     throw std::runtime_error(
@@ -109,19 +112,19 @@ void sQuadrant::splitSpace(
     const cBox &box)
 {
     cBox& sp0 = mySpaces[ispace];
-    cBox sp1(sp0.x - box.x, box.y);
-    sp1.locate(sp0.xloc + box.x, sp0.yloc);
-    cBox sp2(sp0.x,sp0.y-box.y);
-    sp2.locate( sp0.xloc,sp0.yloc+box.y);
+    cBox sp1(sp0.wh.x - box.wh.x, box.wh.y);
+    sp1.locate(sp0.loc.x + box.wh.x, sp0.loc.y);
+    cBox sp2(sp0.wh.x,sp0.wh.y-box.wh.y);
+    sp2.locate( sp0.loc.x,sp0.loc.y+box.wh.y);
     mySpaces.push_back(sp1);
     mySpaces.push_back(sp2);
     //mySpaces.erase(space);
-    mySpaces[ispace].xloc = -1;
+    mySpaces[ispace].loc.x = -1;
 }
 void sQuadrant::pack(cBox &box)
 {
     int space = findBestSpace(box);
-    box.locate(mySpaces[space].xloc,mySpaces[space].yloc);
+    box.locate(mySpaces[space]);
     splitSpace( space, box );
     myBoxes.push_back(box);
 }
@@ -165,7 +168,7 @@ void sProblem::sort()
     std::sort(myBoxes.begin(), myBoxes.end(),
               [](const cBox &a, const cBox &b)
               {
-                  return a.x * a.y > b.x * b.y;
+                  return a.wh.x * a.wh.y > b.wh.x * b.wh.y;
               });
 }
 void sProblem::pack()
@@ -222,8 +225,8 @@ void cGUI::draw(wex::shapes &S)
     {
         for (auto &B : myP.myQuads[q].myBoxes)
         {
-            cxy tl(scale * (B.xloc + xoff), scale * (B.yloc + yoff));
-            cxy wh(scale * B.x, scale * B.y);
+            cxy tl(scale * (B.loc.x + xoff), scale * (B.loc.y + yoff));
+            cxy wh(scale * B.wh.x, scale * B.wh.y);
             S.rectangle(tl, wh);
         }
     }
