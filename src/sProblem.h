@@ -68,8 +68,9 @@ struct sProblem
 
     /** @brief Input box sizes from string
     /// @param sin the string to parse
-    Each box on its own line, width, space, height
+    Each box on its own line: width height
     example:
+
 \pre
 5 8
 32 19
@@ -78,6 +79,16 @@ struct sProblem
 
     */
     void input( const std::string& sin );
+
+/**
+ * @brief Output box packed locations
+ * 
+ * @return std::string  One box per string: index x y
+ * 
+ * The index is the zero-based line number of the input string
+ * 
+ */
+    std::string output() const;
 
     /// @brief generate randomly some boxes to be packed
     /// @param min minimum magnitude of any dimension

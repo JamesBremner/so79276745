@@ -159,6 +159,7 @@ void sQuadrant::splitSpace(
 }
 void sQuadrant::pack(cBox &box)
 {
+
     int space = findBestSpace(box);
     box.locate(mySpaces[space]);
     splitSpace(space, box);
@@ -192,6 +193,14 @@ void sProblem::input(const std::string &sin)
         myBoxes.emplace_back(w, h);
         is >> w >> h;
     }
+}
+
+std::string sProblem::output() const
+{
+    std::stringstream ss;
+    for (int k = 0; k < myBoxes.size(); k++)
+        ss << k << " " << myBoxes[k].loc.x << " " << myBoxes[k].loc.y << "\n";
+    return ss.str();
 }
 
 void sProblem::genRandom(int min, int max, int count)
@@ -243,8 +252,14 @@ void sProblem::pack()
     for (int k = 0; k < myBoxes.size(); k += 4)
     {
         myQuads[0].pack(myBoxes[k]);
+        if (k + 1 == myBoxes.size())
+            break;
         myQuads[1].pack(myBoxes[k + 1]);
+        if (k + 2 == myBoxes.size())
+            break;
         myQuads[2].pack(myBoxes[k + 2]);
+        if (k + 3 == myBoxes.size())
+            break;
         myQuads[3].pack(myBoxes[k + 3]);
     }
 
@@ -260,10 +275,18 @@ bool sProblem::test()
     T.input(
         "5 8\n"
         "32 19\n");
-    if( T.myBoxes.size() != 2 )
+    if (T.myBoxes.size() != 2)
         return false;
-    if( T.myBoxes[1].wh.x != 32 )
+    if (T.myBoxes[1].wh.x != 32)
         return false;
+
+    T.pack();
+
+    auto output = T.output();
+
+    if( output != "0 0 0\n1 0 0\n")
+        return false;
+
     return true;
 }
 
@@ -297,7 +320,7 @@ void cGUI::draw(wex::shapes &S)
 main()
 {
     sProblem P;
-    if( ! P.test() )
+    if (!P.test())
     {
         std::cout << "Unit tests failed\n";
         exit(1);
