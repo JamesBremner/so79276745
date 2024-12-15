@@ -1,3 +1,5 @@
+#pragma once
+
 class cBox {
 public:
     cxy wh;         // width/height

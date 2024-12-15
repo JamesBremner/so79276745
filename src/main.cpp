@@ -4,20 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <wex.h>
-#include "cStarterGUI.h"
+
+#include "cGUI.h"
 #include "sProblem.h"
-
-class cGUI : public cStarterGUI
-{
-public:
-    cGUI(sProblem &P);
-
-private:
-    sProblem &myP;
-
-    void draw(wex::shapes &S);
-};
 
 cBox::cBox(double ix, double iy)
     : wh(ix, iy)
@@ -290,32 +279,6 @@ bool sProblem::test()
     return true;
 }
 
-cGUI::cGUI(sProblem &P)
-    : cStarterGUI(
-          "Packer",
-          {50, 50, 1000, 500}),
-      myP(P)
-{
-    show();
-    run();
-}
-
-void cGUI::draw(wex::shapes &S)
-{
-    double scale = 400 / myP.myTriDim;
-    int xoff = myP.myTriDim;
-    int yoff = myP.myTriDim;
-
-    for (int q = 0; q < 4; q++)
-    {
-        for (auto &B : myP.myQuads[q].myBoxes)
-        {
-            cxy tl(scale * (B.loc.x + xoff), scale * (B.loc.y + yoff));
-            cxy wh(scale * B.wh.x, scale * B.wh.y);
-            S.rectangle(tl, wh);
-        }
-    }
-}
 
 main()
 {
