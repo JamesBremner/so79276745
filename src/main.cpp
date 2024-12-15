@@ -73,7 +73,7 @@ void cBox::rotate(int index)
     case 1:
     {
         cxy tr(xloc + x, yloc);
-        cxy ntl(0, -tr.x);
+        cxy ntl(tr.y, -tr.x);
         xloc = ntl.x;
         yloc = ntl.y;
         temp = x;
@@ -88,7 +88,7 @@ void cBox::rotate(int index)
     case 3:
     {
         cxy bl(xloc, yloc + y);
-        cxy ntl(-bl.y, 0);
+        cxy ntl(-bl.y, bl.x);
         xloc = ntl.x;
         yloc = ntl.y;
         temp = x;
@@ -104,11 +104,21 @@ void cBox::rotate(int index)
 
 void sTriangle::pack(cBox &box)
 {
-    if (!myBoxes.size())
+    switch (myBoxes.size())
     {
+    case 0:
         box.locate(0, 0);
-        myBoxes.push_back(box);
+        break;
+    case 1:
+        box.locate(myBoxes[0].x, 0);
+        break;
+    case 2:
+        box.locate(0, myBoxes[0].y);
+        break;
+    default:
+        return;
     }
+    myBoxes.push_back(box);
 }
 void sTriangle::rotate(int index)
 {
