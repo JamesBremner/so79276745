@@ -1,10 +1,12 @@
-# starter
+# Problem
 
 There is list of rectangles with different (known) widths and heights.
 
 How to pack those rectangles around center point - like this:
 
 ![image](https://github.com/user-attachments/assets/3b1540d1-af9e-4201-b260-be5246ea5e75)
+
+# Algorithm
 
 Divide the area around the central point into 4 traingles of equal area, like this
 
@@ -15,6 +17,8 @@ The total area of the four triangles should equal the total area of of the recta
 Divide the rectangles into 4 subsets of equal total area.
 
 Use a standard bin packing algorithm to pack each triangle with its assigned rectangles.
+
+# Result
 
 Here is how to looks with 50 boxes of random sizes
 
