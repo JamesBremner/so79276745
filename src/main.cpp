@@ -26,9 +26,9 @@ cBox::cBox(double ix, double iy)
 
 void cBox::locate(double x, double y)
 {
-    loc = cxy(x,y);
+    loc = cxy(x, y);
 }
-void cBox::locate(const cBox& other )
+void cBox::locate(const cBox &other)
 {
     loc = other.loc;
 }
@@ -84,7 +84,7 @@ cxy cBox::topright() const
 }
 cxy cBox::bottomleft() const
 {
-    return cxy(loc.x,loc.y+wh.y);
+    return cxy(loc.x, loc.y + wh.y);
 }
 
 sQuadrant::sQuadrant()
@@ -95,37 +95,73 @@ sQuadrant::sQuadrant()
 }
 int sQuadrant::findBestSpace(const cBox &box)
 {
+#define optWastage
+    // #define optSymmetry
+    // #define firstFit
+
     if (!myBoxes.size())
         return 0;
-    for( int s = 0; s < mySpaces.size(); s++ )
+
+    int bestSpaceIndex = 0;
+    double leastWastage = INT_MAX;
+    double leastDistance = INT_MAX;
+
+    for (int s = 0; s < mySpaces.size(); s++)
     {
-        if( mySpaces[s].loc.x<0)
+        // check for remains of a split space
+        if (mySpaces[s].loc.x < 0)
             continue;
-        if( mySpaces[s].wh.y >= box.wh.y )
-            return s;
+        // check that space is tall enough for box
+        if (mySpaces[s].wh.y < box.wh.y)
+            continue;
+
+#ifdef firstFit
+        return s;
+#endif
+
+#ifdef optWastage
+
+        double wastage = mySpaces[s].wh.y - box.wh.y;
+        if (wastage < leastWastage)
+        {
+            leastWastage = wastage;
+            bestSpaceIndex = s;
+        }
+#endif
+
+#ifdef optDistance
+
+        double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
+        if (distance < leastDistance)
+        {
+            leastDistance = distance;
+            bestSpaceIndex = s;
+        }
+
+#endif
     }
-    throw std::runtime_error(
-        "findBestSpace failed");
+
+    return bestSpaceIndex;
 }
 void sQuadrant::splitSpace(
     int ispace,
     const cBox &box)
 {
-    cBox& sp0 = mySpaces[ispace];
+    cBox &sp0 = mySpaces[ispace];
     cBox sp1(sp0.wh.x - box.wh.x, box.wh.y);
     sp1.locate(sp0.loc.x + box.wh.x, sp0.loc.y);
-    cBox sp2(sp0.wh.x,sp0.wh.y-box.wh.y);
-    sp2.locate( sp0.loc.x,sp0.loc.y+box.wh.y);
+    cBox sp2(sp0.wh.x, sp0.wh.y - box.wh.y);
+    sp2.locate(sp0.loc.x, sp0.loc.y + box.wh.y);
     mySpaces.push_back(sp1);
     mySpaces.push_back(sp2);
-    //mySpaces.erase(space);
+    // mySpaces.erase(space);
     mySpaces[ispace].loc.x = -1;
 }
 void sQuadrant::pack(cBox &box)
 {
     int space = findBestSpace(box);
     box.locate(mySpaces[space]);
-    splitSpace( space, box );
+    splitSpace(space, box);
     myBoxes.push_back(box);
 }
 void sQuadrant::rotate(int index)
@@ -154,7 +190,7 @@ void sProblem::genRandom(int min, int max, int count)
     {
         double x = rand() % (max - min) + min;
         double y = rand() % (max - min) + min;
-        //double y = 2 * x;
+        // double y = 2 * x;
         myBoxes.emplace_back(x, y);
     }
 }
