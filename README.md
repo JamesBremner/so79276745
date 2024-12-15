@@ -16,8 +16,9 @@ Divide the rectangles into 4 subsets of equal total area.
 
 Use a standard bin packing algorithm to pack each triangle with its assigned rectangles.
 
-Here is how to looks with 12 boxes of random sizes
+Here is how to looks with 50 boxes of random sizes
 
-![image](https://github.com/user-attachments/assets/b31844aa-1a92-4d8f-8632-46af8fb5955b)
+![image](https://github.com/user-attachments/assets/926e7808-bbc3-4b26-85f3-1f22ad02ff40)
+
 
 
