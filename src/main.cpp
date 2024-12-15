@@ -148,10 +148,17 @@ void sQuadrant::splitSpace(
 }
 void sQuadrant::pack(cBox &box)
 {
-
+    // find index of space where the box will fit
     int space = findBestSpace(box);
+
+    // move the box into the space
     box.locate(mySpaces[space]);
+
+    // split the space into two smaller spaces
+    // one to the right, one below
     splitSpace(space, box);
+
+    // add the box to the quadrant
     myBoxes.push_back(box);
 }
 void sQuadrant::rotate(int index)
@@ -187,8 +194,13 @@ void sProblem::input(const std::string &sin)
 std::string sProblem::output() const
 {
     std::stringstream ss;
-    for (int k = 0; k < myBoxes.size(); k++)
-        ss << k << " " << myBoxes[k].loc.x << " " << myBoxes[k].loc.y << "\n";
+    for (int q = 0; q < 4; q++)
+    {
+        for (auto &B : myQuads[q].myBoxes)
+        {
+        ss << B.loc.x << " " << B.loc.y << "\n";
+        }
+    }
     return ss.str();
 }
 
@@ -273,7 +285,7 @@ bool sProblem::test()
 
     auto output = T.output();
 
-    if( output != "0 0 0\n1 0 0\n")
+    if( output != "-32 -19\n0 -5\n")
         return false;
 
     return true;

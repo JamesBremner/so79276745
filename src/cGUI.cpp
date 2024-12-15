@@ -2,7 +2,7 @@
 
 cGUI::cGUI(sProblem &P)
     : myP(P),
-    fm(wex::maker::make())
+      fm(wex::maker::make())
 {
     {
         fm.move({50, 50, 1000, 500});

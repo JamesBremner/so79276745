@@ -85,9 +85,7 @@ struct sProblem
 /**
  * @brief Output box packed locations
  * 
- * @return std::string  One box per string: index x y
- * 
- * The index is the zero-based line number of the input string
+ * @return std::string  One box per line: x y
  * 
  */
     std::string output() const;
