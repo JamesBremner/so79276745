@@ -51,14 +51,26 @@ struct sQuadrant
     std::vector<cBox> mySpaces; // remaining unpacked spaces
 
     sQuadrant();
+
+    /// @brief pack a box into the quadrant
+    /// @param box 
     void pack(cBox &box);
 
+    /// @brief rotate quadrant, and all it's boxes, into final position
+    /// @param index 
     void rotate(int index);
 
-    cxy maxBottomRight();
 
 private:
+
+    /// @brief find best space to pack box into
+    /// @param box 
+    /// @return index of space
     int findBestSpace(const cBox &box);
+
+    /// @brief split space into two smaller spaces remaining after box is packed 
+    /// @param space 
+    /// @param box 
     void splitSpace(
         int space,
         const cBox &box);
@@ -112,5 +124,7 @@ struct sProblem
     /// @brief pack all the boxes
     void pack();
 
+    /// @brief unit tests
+    /// @return true if all passed
     bool test();
 };

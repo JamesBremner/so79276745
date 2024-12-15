@@ -164,7 +164,13 @@ void sQuadrant::pack(cBox &box)
     // one to the right, one below
     splitSpace(space, box);
 
-    // add the box to the quadrant
+    /* Add the box to the quadrant
+
+    Each quadrant keeps a copy of the boxes packed into it
+    This is profligate with memory,
+    but makes the code simpler when rotating the quadrants into their final positions.
+    It should be of no concern unless there are millions of boxes
+    */
     myBoxes.push_back(box);
 }
 void sQuadrant::rotate(int index)
@@ -172,17 +178,7 @@ void sQuadrant::rotate(int index)
     for (auto &B : myBoxes)
         B.rotate(index);
 }
-cxy sQuadrant::maxBottomRight()
-{
-    cxy ret(0, 0);
-    for (auto &B : myBoxes)
-    {
-        cxy br = B.bottomright();
-        if (br.x + br.y > ret.x + ret.y)
-            ret = br;
-    }
-    return ret;
-}
+
 
 void sProblem::input(const std::string &sin)
 {
