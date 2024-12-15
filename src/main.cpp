@@ -19,6 +19,11 @@ private:
     void draw(wex::shapes &S);
 };
 
+cBox::cBox(double ix, double iy)
+    : cxy(ix, iy)
+{
+}
+
 void cBox::locate(double x, double y)
 {
     xloc = x;
@@ -79,22 +84,45 @@ cxy cBox::topright()
     return cxy(xloc + x, yloc);
 }
 
+sQuadrant::sQuadrant()
+{
+    cBox sp(1000, 1000);
+    sp.locate(0, 0);
+    mySpaces.push_back(sp);
+}
+int sQuadrant::findBestSpace(const cBox &box)
+{
+    if (!myBoxes.size())
+        return 0;
+    for( int s = 0; s < mySpaces.size(); s++ )
+    {
+        if( mySpaces[s].xloc<0)
+            continue;
+        if( mySpaces[s].y >= box.y )
+            return s;
+    }
+    throw std::runtime_error(
+        "findBestSpace failed");
+}
+void sQuadrant::splitSpace(
+    int ispace,
+    const cBox &box)
+{
+    cBox& sp0 = mySpaces[ispace];
+    cBox sp1(sp0.x - box.x, box.y);
+    sp1.locate(sp0.xloc + box.x, sp0.yloc);
+    cBox sp2(sp0.x,sp0.y-box.y);
+    sp2.locate( sp0.xloc,sp0.yloc+box.y);
+    mySpaces.push_back(sp1);
+    mySpaces.push_back(sp2);
+    //mySpaces.erase(space);
+    mySpaces[ispace].xloc = -1;
+}
 void sQuadrant::pack(cBox &box)
 {
-    switch (myBoxes.size())
-    {
-    case 0:
-        box.locate(0, 0);
-        break;
-    case 1:
-        box.locate(myBoxes[0].x, 0);
-        break;
-    case 2:
-        box.locate(0, myBoxes[0].y);
-        break;
-    default:
-        return;
-    }
+    int space = findBestSpace(box);
+    box.locate(mySpaces[space].xloc,mySpaces[space].yloc);
+    splitSpace( space, box );
     myBoxes.push_back(box);
 }
 void sQuadrant::rotate(int index)
@@ -122,13 +150,14 @@ void sProblem::genRandom(int min, int max, int count)
     for (int k = 0; k < count; k++)
     {
         double x = rand() % (max - min) + min;
-        // double y = rand() % (max - min) + min;
-        double y = 2 * x;
+        double y = rand() % (max - min) + min;
+        //double y = 2 * x;
         myBoxes.emplace_back(x, y);
     }
 }
 sProblem::sProblem()
 {
+    // construct 4 quadrants around central point
     myQuads.resize(4);
 }
 void sProblem::sort()
@@ -151,7 +180,7 @@ void sProblem::pack()
 
     /* Pack boxes, round robin fashion, into each quadrant
 
-    This ensures that each quadrant packs 
+    This ensures that each quadrant packs
     boxes of approximately the same total
 
     One way I like to think of this is that it simulates crystal growth from a saturated solution.
@@ -203,7 +232,7 @@ void cGUI::draw(wex::shapes &S)
 main()
 {
     sProblem P;
-    P.genRandom(5, 10, 20);
+    P.genRandom(2, 10, 50);
     P.pack();
     cGUI theGUI(P);
     return 0;
