@@ -14,5 +14,10 @@ The total area of the four triangles should equal the total area of of the recta
 
 Divide the rectangles into 4 subsets of equal total area.
 
-Use a standard bin packing algorithm to pack each triangle ith its assigned rectangles.
+Use a standard bin packing algorithm to pack each triangle with its assigned rectangles.
+
+Here is how to looks with 12 boxes of random sizes
+
+![image](https://github.com/user-attachments/assets/b31844aa-1a92-4d8f-8632-46af8fb5955b)
+
 
