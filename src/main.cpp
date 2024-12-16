@@ -90,8 +90,8 @@ sQuadrant::sQuadrant()
 }
 int sQuadrant::findBestSpace(const cBox &box)
 {
-    #define optWastage
-    //#define optSymmetry
+    //#define optWastage
+    #define optDistance
     //#define firstFit
 
     if (!myBoxes.size())
