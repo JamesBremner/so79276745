@@ -56,6 +56,10 @@ struct sQuadrant
     /// @param box 
     void pack(cBox &box);
 
+    /// @brief maximum location along x or y axis
+    /// @return 
+    ///
+    /// Used to scale the graphical display
     int maxDim() const;
 
     /// @brief rotate quadrant, and all it's boxes, into final position
@@ -82,6 +86,7 @@ struct sProblem
 {
     std::vector<cBox> myBoxes;      // the boxes to be packed
     std::vector<sQuadrant> myQuads; // the quadrants around the central point
+    double mySpread;                // maximum location along x or y axis
 
     sProblem();
 

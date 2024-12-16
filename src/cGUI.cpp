@@ -22,10 +22,9 @@ cGUI::cGUI(sProblem &P)
 
 void cGUI::draw(wex::shapes &S)
 {   
-    double spread = 1.2 * myP.myQuads[2].maxDim();
-    double scale = 450 / spread;
-    int xoff = spread;
-    int yoff = spread;
+    double scale = 450 / ( 1.2 * myP.mySpread );
+    int xoff = myP.mySpread ;
+    int yoff = myP.mySpread ;
 
     for (int q = 0; q < 4; q++)
         for (auto &B : myP.myQuads[q].myBoxes)

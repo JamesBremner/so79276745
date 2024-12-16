@@ -288,6 +288,13 @@ void sProblem::pack()
 
     for (int q = 0; q < 4; q++)
         myQuads[q].rotate(q);
+
+    // maximum location along x or y axis
+    // used to scale graphical display
+    // calculated in bottom right quadrant so both x and y axis are positive
+    // assumes algorithm works well to even out the spread of all quadrants
+
+    mySpread = myQuads[2].maxDim();
 }
 
 bool sProblem::test()
