@@ -8,14 +8,14 @@
 #include "cGUI.h"
 #include "sProblem.h"
 
-cBox::cBox( double ix, double iy)
-    : userID( -1 ),
-    wh(ix, iy)
+cBox::cBox(double ix, double iy)
+    : userID(-1),
+      wh(ix, iy)
 {
 }
 cBox::cBox(int id, double ix, double iy)
-    : userID( id ),
-    wh(ix, iy)
+    : userID(id),
+      wh(ix, iy)
 {
 }
 
@@ -90,10 +90,6 @@ sQuadrant::sQuadrant()
 }
 int sQuadrant::findBestSpace(const cBox &box)
 {
-    //#define optWastage
-    #define optDistance
-    //#define firstFit
-
     if (!myBoxes.size())
         return 0;
 
@@ -110,34 +106,44 @@ int sQuadrant::findBestSpace(const cBox &box)
         if (mySpaces[s].wh.y < box.wh.y)
             continue;
 
-#ifdef firstFit
-        return s;
-#endif
+        // the box could be fitted into this space
+        // apply best space algorithm
 
-#ifdef optWastage
-
-        double wastage = mySpaces[s].wh.y - box.wh.y;
-        if (wastage < leastWastage)
+        switch (sProblem::bestSpace())
         {
-            leastWastage = wastage;
-            bestSpaceIndex = s;
-        }
-#endif
 
-#ifdef optDistance
+        case sProblem::eBestSpace::firstFit:
+            return s;
+            break;
 
-        double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
-        if (distance < leastDistance)
+        case sProblem::eBestSpace::minGap:
         {
-            leastDistance = distance;
-            bestSpaceIndex = s;
+            double wastage = mySpaces[s].wh.y - box.wh.y;
+            if (wastage < leastWastage)
+            {
+                leastWastage = wastage;
+                bestSpaceIndex = s;
+            }
         }
+        break;
 
-#endif
+        case sProblem::eBestSpace::minDist:
+        {
+
+            double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
+            if (distance < leastDistance)
+            {
+                leastDistance = distance;
+                bestSpaceIndex = s;
+            }
+        }
+        break;
+        }
     }
 
     return bestSpaceIndex;
 }
+
 void sQuadrant::splitSpace(
     int ispace,
     const cBox &box)
@@ -177,11 +183,11 @@ void sQuadrant::pack(cBox &box)
 int sQuadrant::maxDim() const
 {
     int ret = 0;
-    for( auto& box : myBoxes )
+    for (auto &box : myBoxes)
     {
-        if( box.loc.x > ret )
+        if (box.loc.x > ret)
             ret = box.loc.x;
-        if( box.loc.y > ret )
+        if (box.loc.y > ret)
             ret = box.loc.y;
     }
     return ret;
@@ -192,7 +198,6 @@ void sQuadrant::rotate(int index)
     for (auto &B : myBoxes)
         B.rotate(index);
 }
-
 
 void sProblem::input(const std::string &sin)
 {
@@ -217,8 +222,8 @@ std::string sProblem::output() const
         for (auto &B : myQuads[q].myBoxes)
         {
             ss << B.userID << " "
-                << B.loc.x << " " 
-                << B.loc.y << "\n";
+               << B.loc.x << " "
+               << B.loc.y << "\n";
         }
     }
     return ss.str();
@@ -234,14 +239,20 @@ void sProblem::genRandom(int min, int max, int count)
         double y = rand() % (max - min) + min;
         myBoxes.emplace_back(x, y);
 
-        std::cout << "( " <<x <<" "<< y << "),";
+        std::cout << "( " << x << " " << y << "),";
     }
 }
+
+sProblem::eBestSpace sProblem::myBestSpace;
+
 sProblem::sProblem()
 {
+    myBestSpace = eBestSpace::firstFit;
+
     // construct 4 quadrants around central point
     myQuads.resize(4);
 }
+
 void sProblem::sort()
 {
     std::sort(myBoxes.begin(), myBoxes.end(),
@@ -312,12 +323,11 @@ bool sProblem::test()
 
     auto output = T.output();
 
-    if( output != "1 -32 -19\n0 0 -5\n")
+    if (output != "1 -32 -19\n0 0 -5\n")
         return false;
 
     return true;
 }
-
 
 main()
 {

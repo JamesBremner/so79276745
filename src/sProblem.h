@@ -86,9 +86,28 @@ struct sProblem
 {
     std::vector<cBox> myBoxes;      // the boxes to be packed
     std::vector<sQuadrant> myQuads; // the quadrants around the central point
+
+    enum class eBestSpace
+    {
+        firstFit,
+        minGap,
+        minDist,
+    };
+
+    static eBestSpace myBestSpace;
+
     double mySpread;                // maximum location along x or y axis
 
     sProblem();
+
+    static void bestSpace( eBestSpace ebs)
+    {
+        myBestSpace = ebs;
+    }
+    static eBestSpace bestSpace()
+    {
+        return myBestSpace;
+    }
 
     /** @brief Input box sizes from string
     /// @param sin the string to parse
