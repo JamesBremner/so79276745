@@ -173,6 +173,20 @@ void sQuadrant::pack(cBox &box)
     */
     myBoxes.push_back(box);
 }
+
+int sQuadrant::maxDim() const
+{
+    int ret = 0;
+    for( auto& box : myBoxes )
+    {
+        if( box.loc.x > ret )
+            ret = box.loc.x;
+        if( box.loc.y > ret )
+            ret = box.loc.y;
+    }
+    return ret;
+}
+
 void sQuadrant::rotate(int index)
 {
     for (auto &B : myBoxes)
@@ -213,14 +227,14 @@ std::string sProblem::output() const
 void sProblem::genRandom(int min, int max, int count)
 {
     srand(77);
-    myTriDim = 50;
     myBoxes.clear();
     for (int k = 0; k < count; k++)
     {
         double x = rand() % (max - min) + min;
         double y = rand() % (max - min) + min;
-        // double y = 2 * x;
         myBoxes.emplace_back(x, y);
+
+        std::cout << "( " <<x <<" "<< y << "),";
     }
 }
 sProblem::sProblem()

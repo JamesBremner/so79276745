@@ -56,6 +56,8 @@ struct sQuadrant
     /// @param box 
     void pack(cBox &box);
 
+    int maxDim() const;
+
     /// @brief rotate quadrant, and all it's boxes, into final position
     /// @param index 
     void rotate(int index);
@@ -80,7 +82,6 @@ struct sProblem
 {
     std::vector<cBox> myBoxes;      // the boxes to be packed
     std::vector<sQuadrant> myQuads; // the quadrants around the central point
-    int myTriDim;                   // length of non-hypotenous
 
     sProblem();
 

@@ -21,18 +21,16 @@ cGUI::cGUI(sProblem &P)
 }
 
 void cGUI::draw(wex::shapes &S)
-{
-    double scale = 400 / myP.myTriDim;
-    int xoff = myP.myTriDim;
-    int yoff = myP.myTriDim;
+{   
+    double spread = 1.2 * myP.myQuads[2].maxDim();
+    double scale = 450 / spread;
+    int xoff = spread;
+    int yoff = spread;
 
     for (int q = 0; q < 4; q++)
-    {
         for (auto &B : myP.myQuads[q].myBoxes)
-        {
-            cxy tl(scale * (B.loc.x + xoff), scale * (B.loc.y + yoff));
-            cxy wh(scale * B.wh.x, scale * B.wh.y);
-            S.rectangle(tl, wh);
-        }
-    }
+            S.rectangle(
+                cxy(scale * (B.loc.x + xoff), scale * (B.loc.y + yoff)),
+                cxy(scale * B.wh.x, scale * B.wh.y));
+
 }
