@@ -90,9 +90,9 @@ sQuadrant::sQuadrant()
 }
 int sQuadrant::findBestSpace(const cBox &box)
 {
-#define optWastage
-    // #define optSymmetry
-    // #define firstFit
+    #define optWastage
+    //#define optSymmetry
+    //#define firstFit
 
     if (!myBoxes.size())
         return 0;
@@ -327,7 +327,7 @@ main()
         std::cout << "Unit tests failed\n";
         exit(1);
     }
-    P.genRandom(2, 10, 50);
+    P.genRandom(2, 50, 50);
     P.pack();
     cGUI theGUI(P);
     return 0;
