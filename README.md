@@ -1,3 +1,9 @@
+# Motivation
+
+Code for https://stackoverflow.com/q/79276745/16582
+
+Code for https://stackoverflow.com/q/79283163/16582
+
 # Problem
 
 There is list of rectangles with different (known) widths and heights.
