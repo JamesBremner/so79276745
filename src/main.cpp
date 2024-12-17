@@ -136,7 +136,6 @@ int sQuadrant::findBestSpace(const cBox &box)
 
         case sProblem::eBestSpace::minDist:
         {
-
             double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
             if (distance < leastDistance)
             {

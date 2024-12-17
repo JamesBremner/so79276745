@@ -1,3 +1,5 @@
+#include <fstream>
+#include <sstream>
 #include "cGUI.h"
 
 cGUI::cGUI(sProblem &P)
@@ -23,6 +25,36 @@ cGUI::cGUI(sProblem &P)
 void cGUI::menus()
 {
     wex::menubar mb(fm);
+    myFileMenu = new wex::menu(fm);
+    myFileMenu->append(
+        "Load",
+        [&](const std::string &title)
+        {
+            wex::filebox fb(fm);
+            auto fn = fb.open();
+            if (fn.empty())
+                return;
+            std::ifstream t(fn);
+            std::stringstream buffer;
+            buffer << t.rdbuf();
+            myP.input(buffer.str());
+            myP.pack();
+            fm.update();
+        });
+    myFileMenu->append(
+        "Save",
+        [&](const std::string &title)
+        {
+            wex::filebox fb(fm);
+            auto fn = fb.save();
+            if (fn.empty())
+                return;
+            std::ofstream t(fn);
+            t << myP.output();
+        });
+
+    mb.append("File", *myFileMenu);
+
     myAlgoMenu = new wex::menu(fm);
     myAlgoMenu->append(
         "First Fit",

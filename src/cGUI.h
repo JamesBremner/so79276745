@@ -9,6 +9,7 @@ public:
 private:
     wex::gui &fm;
     wex::menu* myAlgoMenu;
+    wex::menu* myFileMenu;
 
     sProblem &myP;
 
