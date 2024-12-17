@@ -84,6 +84,13 @@ cxy cBox::bottomleft() const
 
 sQuadrant::sQuadrant()
 {
+    clear();
+}
+
+void sQuadrant::clear()
+{
+    myBoxes.clear();
+    mySpaces.clear();
     cBox sp(1000, 1000);
     sp.locate(0, 0);
     mySpaces.push_back(sp);
@@ -182,13 +189,16 @@ void sQuadrant::pack(cBox &box)
 
 int sQuadrant::maxDim() const
 {
+    if (!myBoxes.size())
+        return 50;
     int ret = 0;
     for (auto &box : myBoxes)
     {
-        if (box.loc.x > ret)
-            ret = box.loc.x;
-        if (box.loc.y > ret)
-            ret = box.loc.y;
+        cxy br = box.bottomright();
+        if (br.x > ret)
+            ret = br.x;
+        if (br.y > ret)
+            ret = br.y;
     }
     return ret;
 }
@@ -255,11 +265,12 @@ sProblem::sProblem()
 
 void sProblem::sort()
 {
-    std::sort(myBoxes.begin(), myBoxes.end(),
-              [](const cBox &a, const cBox &b)
-              {
-                  return a.wh.x * a.wh.y > b.wh.x * b.wh.y;
-              });
+    std::sort(
+        myBoxes.begin(), myBoxes.end(),
+        [](const cBox &a, const cBox &b)
+        {
+            return a.wh.x * a.wh.y > b.wh.x * b.wh.y;
+        });
 }
 void sProblem::pack()
 {
@@ -270,6 +281,11 @@ void sProblem::pack()
 
     */
     sort();
+
+    // clear the quadrants
+
+    for (auto &q : myQuads)
+        q.clear();
 
     /* Pack boxes, round robin fashion, into each quadrant
 

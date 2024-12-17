@@ -52,6 +52,8 @@ struct sQuadrant
 
     sQuadrant();
 
+    void clear();
+
     /// @brief pack a box into the quadrant
     /// @param box 
     void pack(cBox &box);

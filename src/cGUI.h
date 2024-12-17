@@ -8,7 +8,10 @@ public:
 
 private:
     wex::gui &fm;
-    sProblem& myP;
+    wex::menu* myAlgoMenu;
 
-     void draw(wex::shapes &S);
+    sProblem &myP;
+
+    void menus();
+    void draw(wex::shapes &S);
 };
