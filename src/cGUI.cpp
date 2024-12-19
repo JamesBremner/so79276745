@@ -95,5 +95,5 @@ void cGUI::draw(wex::shapes &S)
         for (auto &B : myP.myQuads[q].myBoxes)
             S.rectangle(
                 cxy(scale * (B.loc.x + xoff), scale * (B.loc.y + yoff)),
-                cxy(scale * B.wh.x, scale * B.wh.y));
+                cxy(scale * B.wlh.x, scale * B.wlh.y));
 }

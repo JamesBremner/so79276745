@@ -5,82 +5,86 @@
 #include <vector>
 #include <algorithm>
 
+#include "packEngine.h"
+
 #include "cGUI.h"
 #include "sProblem.h"
 
-cBox::cBox(double ix, double iy)
-    : userID(-1),
-      wh(ix, iy)
-{
-}
-cBox::cBox(int id, double ix, double iy)
-    : userID(id),
-      wh(ix, iy)
-{
-}
+typedef raven::pack::cItem box_t;
 
-void cBox::locate(double x, double y)
-{
-    loc = cxy(x, y);
-}
-void cBox::locate(const cBox &other)
-{
-    loc = other.loc;
-}
-void cBox::rotate(int index)
-{
-    double temp;
-    switch (index)
-    {
-    case 0:
-    {
-        cxy br = bottomright();
-        cxy ntl(-br.x, -br.y);
-        loc = ntl;
-    }
-    break;
+// cBox::cBox(double ix, double iy)
+//     : userID(-1),
+//       wh(ix, iy)
+// {
+// }
+// cBox::cBox(int id, double ix, double iy)
+//     : userID(id),
+//       wh(ix, iy)
+// {
+// }
 
-    case 1:
-    {
-        cxy tr = topright();
-        cxy ntl(tr.y, -tr.x);
-        loc = ntl;
-        temp = wh.x;
-        wh.x = wh.y;
-        wh.y = temp;
-    }
-    break;
+// void cBox::locate(double x, double y)
+// {
+//     loc = cxy(x, y);
+// }
+// void cBox::locate(const cBox &other)
+// {
+//     loc = other.loc;
+// }
+// void cBox::rotate(int index)
+// {
+//     double temp;
+//     switch (index)
+//     {
+//     case 0:
+//     {
+//         cxy br = bottomright();
+//         cxy ntl(-br.x, -br.y);
+//         loc = ntl;
+//     }
+//     break;
 
-    case 2:
-        return;
+//     case 1:
+//     {
+//         cxy tr = topright();
+//         cxy ntl(tr.y, -tr.x);
+//         loc = ntl;
+//         temp = wh.x;
+//         wh.x = wh.y;
+//         wh.y = temp;
+//     }
+//     break;
 
-    case 3:
-    {
-        cxy bl = bottomleft();
-        cxy ntl(-bl.y, bl.x);
-        loc = ntl;
-        temp = wh.x;
-        wh.x = wh.y;
-        wh.y = temp;
-    }
-    break;
-    default:
-        throw std::runtime_error(
-            "sTriangle::rotate bad quadrant");
-    }
-}
-cxy cBox::bottomright() const
-{
-    return cxy(loc.x + wh.x, loc.y + wh.y);
-}
-cxy cBox::topright() const
-{
-    return cxy(loc.x + wh.x, loc.y);
-}
-cxy cBox::bottomleft() const
-{
-    return cxy(loc.x, loc.y + wh.y);
-}
+//     case 2:
+//         return;
+
+//     case 3:
+//     {
+//         cxy bl = bottomleft();
+//         cxy ntl(-bl.y, bl.x);
+//         loc = ntl;
+//         temp = wh.x;
+//         wh.x = wh.y;
+//         wh.y = temp;
+//     }
+//     break;
+//     default:
+//         throw std::runtime_error(
+//             "sTriangle::rotate bad quadrant");
+//     }
+// }
+// cxy cBox::bottomright() const
+// {
+//     return cxy(loc.x + wh.x, loc.y + wh.y);
+// }
+// cxy cBox::topright() const
+// {
+//     return cxy(loc.x + wh.x, loc.y);
+// }
+// cxy cBox::bottomleft() const
+// {
+//     return cxy(loc.x, loc.y + wh.y);
+// }
 
 sQuadrant::sQuadrant()
 {
@@ -90,91 +94,94 @@ sQuadrant::sQuadrant()
 void sQuadrant::clear()
 {
     myBoxes.clear();
-    mySpaces.clear();
-    cBox sp(1000, 1000);
-    sp.locate(0, 0);
-    mySpaces.push_back(sp);
-}
-int sQuadrant::findBestSpace(const cBox &box)
-{
-    if (!myBoxes.size())
-        return 0;
-
-    int bestSpaceIndex = 0;
-    double leastWastage = INT_MAX;
-    double leastDistance = INT_MAX;
-
-    for (int s = 0; s < mySpaces.size(); s++)
-    {
-        // check for remains of a split space
-        if (mySpaces[s].loc.x < 0)
-            continue;
-        // check that space is tall enough for box
-        if (mySpaces[s].wh.y < box.wh.y)
-            continue;
-
-        // the box could be fitted into this space
-        // apply best space algorithm
-
-        switch (sProblem::bestSpace())
-        {
-
-        case sProblem::eBestSpace::firstFit:
-            return s;
-            break;
-
-        case sProblem::eBestSpace::minGap:
-        {
-            double wastage = mySpaces[s].wh.y - box.wh.y;
-            if (wastage < leastWastage)
-            {
-                leastWastage = wastage;
-                bestSpaceIndex = s;
-            }
-        }
-        break;
-
-        case sProblem::eBestSpace::minDist:
-        {
-            double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
-            if (distance < leastDistance)
-            {
-                leastDistance = distance;
-                bestSpaceIndex = s;
-            }
-        }
-        break;
-        }
-    }
-
-    return bestSpaceIndex;
+    E.setSize(1000, 1000);
+    // mySpaces.clear();
+    // cBox sp(1000, 1000);
+    // sp.locate(0, 0);
+    // mySpaces.push_back(sp);
 }
 
-void sQuadrant::splitSpace(
-    int ispace,
-    const cBox &box)
+// int sQuadrant::findBestSpace(const cBox &box)
+// {
+//     if (!myBoxes.size())
+//         return 0;
+
+//     int bestSpaceIndex = 0;
+//     double leastWastage = INT_MAX;
+//     double leastDistance = INT_MAX;
+
+//     for (int s = 0; s < mySpaces.size(); s++)
+//     {
+//         // check for remains of a split space
+//         if (mySpaces[s].loc.x < 0)
+//             continue;
+//         // check that space is tall enough for box
+//         if (mySpaces[s].wh.y < box.wh.y)
+//             continue;
+
+//         // the box could be fitted into this space
+//         // apply best space algorithm
+
+//         switch (sProblem::bestSpace())
+//         {
+
+//         case sProblem::eBestSpace::firstFit:
+//             return s;
+//             break;
+
+//         case sProblem::eBestSpace::minGap:
+//         {
+//             double wastage = mySpaces[s].wh.y - box.wh.y;
+//             if (wastage < leastWastage)
+//             {
+//                 leastWastage = wastage;
+//                 bestSpaceIndex = s;
+//             }
+//         }
+//         break;
+
+//         case sProblem::eBestSpace::minDist:
+//         {
+//             double distance = mySpaces[s].loc.x + mySpaces[s].loc.y;
+//             if (distance < leastDistance)
+//             {
+//                 leastDistance = distance;
+//                 bestSpaceIndex = s;
+//             }
+//         }
+//         break;
+//         }
+//     }
+
+//     return bestSpaceIndex;
+// }
+
+// void sQuadrant::splitSpace(
+//     int ispace,
+//     const cBox &box)
+// {
+//     cBox &sp0 = mySpaces[ispace];
+//     cBox sp1(sp0.wh.x - box.wh.x, box.wh.y);
+//     sp1.locate(sp0.loc.x + box.wh.x, sp0.loc.y);
+//     cBox sp2(sp0.wh.x, sp0.wh.y - box.wh.y);
+//     sp2.locate(sp0.loc.x, sp0.loc.y + box.wh.y);
+//     mySpaces.push_back(sp1);
+//     mySpaces.push_back(sp2);
+//     // mySpaces.erase(space);
+//     mySpaces[ispace].loc.x = -1;
+// }
+void sQuadrant::pack(raven::pack::cItem &box)
 {
-    cBox &sp0 = mySpaces[ispace];
-    cBox sp1(sp0.wh.x - box.wh.x, box.wh.y);
-    sp1.locate(sp0.loc.x + box.wh.x, sp0.loc.y);
-    cBox sp2(sp0.wh.x, sp0.wh.y - box.wh.y);
-    sp2.locate(sp0.loc.x, sp0.loc.y + box.wh.y);
-    mySpaces.push_back(sp1);
-    mySpaces.push_back(sp2);
-    // mySpaces.erase(space);
-    mySpaces[ispace].loc.x = -1;
-}
-void sQuadrant::pack(cBox &box)
-{
+    E.pack(box);
     // find index of space where the box will fit
-    int space = findBestSpace(box);
+    // int space = findBestSpace(box);
 
-    // move the box into the space
-    box.locate(mySpaces[space]);
+    // // move the box into the space
+    // box.locate(mySpaces[space]);
 
-    // split the space into two smaller spaces
-    // one to the right, one below
-    splitSpace(space, box);
+    // // split the space into two smaller spaces
+    // // one to the right, one below
+    // splitSpace(space, box);
 
     /* Add the box to the quadrant
 
@@ -186,6 +193,25 @@ void sQuadrant::pack(cBox &box)
     myBoxes.push_back(box);
 }
 
+cxy sQuadrant::bottomright(const raven::pack::cItem &rect) const
+{
+    return cxy(
+        rect.loc.x + rect.wlh.x,
+        rect.loc.y + rect.wlh.y);
+}
+cxy sQuadrant::topright(const raven::pack::cItem &rect) const
+{
+    return cxy(
+        rect.loc.x + rect.wlh.x,
+        rect.loc.y);
+}
+cxy sQuadrant::bottomleft(const raven::pack::cItem &rect) const
+{
+    return cxy(
+        rect.loc.x,
+        rect.loc.y + rect.wlh.y);
+}
+
 int sQuadrant::maxDim() const
 {
     if (!myBoxes.size())
@@ -193,7 +219,7 @@ int sQuadrant::maxDim() const
     int ret = 0;
     for (auto &box : myBoxes)
     {
-        cxy br = box.bottomright();
+        cxy br = bottomright(box);
         if (br.x > ret)
             ret = br.x;
         if (br.y > ret)
@@ -204,8 +230,51 @@ int sQuadrant::maxDim() const
 
 void sQuadrant::rotate(int index)
 {
-    for (auto &B : myBoxes)
-        B.rotate(index);
+    double temp;
+    switch (index)
+    {
+    case 0:
+    {
+        for (auto &B : myBoxes)
+        {
+            cxy br = bottomright(B);
+            B.move(-br.x, -br.y);
+        }
+    }
+    break;
+
+    case 1:
+    {
+        for (auto &B : myBoxes)
+        {
+            cxy tr = topright(B);
+            B.move(tr.y, -tr.x);
+            temp = B.loc.x;
+            B.wlh.x = B.wlh.y;
+            B.wlh.y = temp;
+        }
+    }
+    break;
+
+    case 2:
+        return;
+
+    case 3:
+    {
+        for (auto &B : myBoxes)
+        {
+            cxy bl = bottomleft(B);
+            B.move(-bl.y, bl.x);
+            temp = B.loc.x;
+            B.wlh.x = B.wlh.y;
+            B.wlh.y = temp;
+        }
+    }
+    break;
+    default:
+        throw std::runtime_error(
+            "sTriangle::rotate bad quadrant");
+    }
 }
 
 void sProblem::input(const std::string &sin)
@@ -217,7 +286,7 @@ void sProblem::input(const std::string &sin)
     is >> w >> h;
     while (is.good())
     {
-        myBoxes.emplace_back(userID, w, h);
+        myBoxes.emplace_back( w, h);
         userID++;
         is >> w >> h;
     }
@@ -230,8 +299,8 @@ std::string sProblem::output() const
     {
         for (auto &B : myQuads[q].myBoxes)
         {
-            ss << B.userID << " "
-               << B.loc.x << " "
+            // ss << B.userID << " "
+             ss  << B.loc.x << " "
                << B.loc.y << "\n";
         }
     }
@@ -266,9 +335,9 @@ void sProblem::sort()
 {
     std::sort(
         myBoxes.begin(), myBoxes.end(),
-        [](const cBox &a, const cBox &b)
+        [](const box_t &a, const box_t &b)
         {
-            return a.wh.x * a.wh.y > b.wh.x * b.wh.y;
+            return a.volume() > b.volume();
         });
 }
 void sProblem::pack()
@@ -331,14 +400,14 @@ bool sProblem::test()
         "32 19\n");
     if (T.myBoxes.size() != 2)
         return false;
-    if (T.myBoxes[1].wh.x != 32)
+    if (T.myBoxes[1].wlh.x != 32)
         return false;
 
     T.pack();
 
     auto output = T.output();
 
-    if (output != "1 -32 -19\n0 0 -5\n")
+    if (output != "-32 -19\n0 -5\n")
         return false;
 
     return true;

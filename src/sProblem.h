@@ -1,34 +1,37 @@
 #pragma once
 
-class cBox
-{
-public:
-    cxy wh;     // width/height
-    cxy loc;    // location ( top right in quadrant 3 )
-    int userID; // zero-based line number from input string
+#include "packEngine.h"
 
-    /// @brief CTOR
-    /// @param id for user
-    /// @param ix width
-    /// @param iy height
+// class cBox
+// {
+// public:
+//     cxy wh;     // width/height
+//     cxy loc;    // location ( top right in quadrant 3 )
+//     int userID; // zero-based line number from input string
 
-    cBox(int id, double ix, double iy);
+//     /// @brief CTOR
+//     /// @param id for user
+//     /// @param ix width
+//     /// @param iy height
 
-    cBox(double ix, double iy);
+//     cBox(int id, double ix, double iy);
 
-    // locate box at point x,y
-    void locate(double x, double y);
+//     cBox(double ix, double iy);
 
-    // locate box on top of another ( no size change )
-    void locate(const cBox &other);
+//     // locate box at point x,y
+//     void locate(double x, double y);
 
-    // rotate box from 3rd quadrant to specified quad
-    void rotate(int quadrant);
+//     // locate box on top of another ( no size change )
+//     void locate(const cBox &other);
 
-    cxy topright() const;
-    cxy bottomright() const;
-    cxy bottomleft() const;
-};
+//     // rotate box from 3rd quadrant to specified quad
+//     void rotate(int quadrant);
+
+//     cxy topright() const;
+//     cxy bottomright() const;
+//     cxy bottomleft() const;
+// };
+
 /**
  * The 2D space around the central point is divided into 4 quadrants
  *
@@ -47,8 +50,10 @@ public:
  */
 struct sQuadrant
 {
-    std::vector<cBox> myBoxes;  // the boxes packed into this quadrant
-    std::vector<cBox> mySpaces; // remaining unpacked spaces
+    std::vector<raven::pack::cItem> myBoxes;  // the boxes packed into this quadrant
+    //std::vector<cBox> mySpaces; // remaining unpacked spaces
+
+    raven::pack::cEngine E;
 
     sQuadrant();
 
@@ -56,7 +61,7 @@ struct sQuadrant
 
     /// @brief pack a box into the quadrant
     /// @param box 
-    void pack(cBox &box);
+    void pack(raven::pack::cItem &box);
 
     /// @brief maximum location along x or y axis
     /// @return 
@@ -74,19 +79,23 @@ private:
     /// @brief find best space to pack box into
     /// @param box 
     /// @return index of space
-    int findBestSpace(const cBox &box);
+    //int findBestSpace(const cBox &box);
 
     /// @brief split space into two smaller spaces remaining after box is packed 
     /// @param space 
     /// @param box 
-    void splitSpace(
-        int space,
-        const cBox &box);
+    //void splitSpace(
+        // int space,
+        // const cBox &box);
+
+    cxy bottomright( const raven::pack::cItem& rect ) const;
+    cxy topright(const raven::pack::cItem &rect) const;
+    cxy bottomleft(const raven::pack::cItem &rect) const;
 };
 
 struct sProblem
 {
-    std::vector<cBox> myBoxes;      // the boxes to be packed
+    std::vector<raven::pack::cItem> myBoxes;      // the boxes to be packed
     std::vector<sQuadrant> myQuads; // the quadrants around the central point
 
     enum class eBestSpace
