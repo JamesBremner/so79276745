@@ -60,7 +60,8 @@ void cGUI::menus()
         "First Fit",
         [&](const std::string &title)
         {
-            myP.bestSpace(sProblem::eBestSpace::firstFit);
+            myP.bestSpace(
+                raven::pack::cEngine::eBestSpaceAlgo::firstFit);
             myP.pack();
             fm.text("Packer " + title);
             fm.update();
@@ -69,7 +70,8 @@ void cGUI::menus()
         "Min Gaps",
         [&](const std::string &title)
         {
-            myP.bestSpace(sProblem::eBestSpace::minGap);
+            myP.bestSpace(
+                raven::pack::cEngine::eBestSpaceAlgo::minGap);
             myP.pack();
             fm.text("Packer " + title);
             fm.update();
@@ -78,7 +80,8 @@ void cGUI::menus()
         "Min Spread",
         [&](const std::string &title)
         {
-            myP.bestSpace(sProblem::eBestSpace::minDist);
+            myP.bestSpace(
+                raven::pack::cEngine::eBestSpaceAlgo::minDist);
             myP.pack();
             fm.text("Packer " + title);
             fm.update();

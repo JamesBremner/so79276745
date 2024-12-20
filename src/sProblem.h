@@ -51,13 +51,14 @@
 struct sQuadrant
 {
     std::vector<raven::pack::cItem> myBoxes;  // the boxes packed into this quadrant
-    //std::vector<cBox> mySpaces; // remaining unpacked spaces
-
+ 
     raven::pack::cEngine E;
 
     sQuadrant();
 
     void clear();
+    void bestSpaceAlgo(
+        raven::pack::cEngine::eBestSpaceAlgo algo );
 
     /// @brief pack a box into the quadrant
     /// @param box 
@@ -98,24 +99,17 @@ struct sProblem
     std::vector<raven::pack::cItem> myBoxes;      // the boxes to be packed
     std::vector<sQuadrant> myQuads; // the quadrants around the central point
 
-    enum class eBestSpace
-    {
-        firstFit,
-        minGap,
-        minDist,
-    };
-
-    static eBestSpace myBestSpace;
+    static  raven::pack::cEngine::eBestSpaceAlgo myBestSpace;
 
     double mySpread;                // maximum location along x or y axis
 
     sProblem();
 
-    static void bestSpace( eBestSpace ebs)
+    static void bestSpace( raven::pack::cEngine::eBestSpaceAlgo ebs)
     {
         myBestSpace = ebs;
     }
-    static eBestSpace bestSpace()
+    static  raven::pack::cEngine::eBestSpaceAlgo bestSpace()
     {
         return myBestSpace;
     }

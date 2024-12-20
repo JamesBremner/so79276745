@@ -3,6 +3,7 @@ VPATH = ./src
 
 	# compiler include search paths
 INCS = -I./include \
+	-I../PackEngine/src \
 	-I../windex/include \
 	-I../raven-set \
 
@@ -37,4 +38,6 @@ starter: $(OBJ_starter)
 .PHONY: clean
 clean:
 	del /q .vscode\\obj\\*.o
+
+rebuild: clean starter
 

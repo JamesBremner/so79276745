@@ -12,80 +12,6 @@
 
 typedef raven::pack::cItem box_t;
 
-// cBox::cBox(double ix, double iy)
-//     : userID(-1),
-//       wh(ix, iy)
-// {
-// }
-// cBox::cBox(int id, double ix, double iy)
-//     : userID(id),
-//       wh(ix, iy)
-// {
-// }
-
-// void cBox::locate(double x, double y)
-// {
-//     loc = cxy(x, y);
-// }
-// void cBox::locate(const cBox &other)
-// {
-//     loc = other.loc;
-// }
-// void cBox::rotate(int index)
-// {
-//     double temp;
-//     switch (index)
-//     {
-//     case 0:
-//     {
-//         cxy br = bottomright();
-//         cxy ntl(-br.x, -br.y);
-//         loc = ntl;
-//     }
-//     break;
-
-//     case 1:
-//     {
-//         cxy tr = topright();
-//         cxy ntl(tr.y, -tr.x);
-//         loc = ntl;
-//         temp = wh.x;
-//         wh.x = wh.y;
-//         wh.y = temp;
-//     }
-//     break;
-
-//     case 2:
-//         return;
-
-//     case 3:
-//     {
-//         cxy bl = bottomleft();
-//         cxy ntl(-bl.y, bl.x);
-//         loc = ntl;
-//         temp = wh.x;
-//         wh.x = wh.y;
-//         wh.y = temp;
-//     }
-//     break;
-//     default:
-//         throw std::runtime_error(
-//             "sTriangle::rotate bad quadrant");
-//     }
-// }
-// cxy cBox::bottomright() const
-// {
-//     return cxy(loc.x + wh.x, loc.y + wh.y);
-// }
-// cxy cBox::topright() const
-// {
-//     return cxy(loc.x + wh.x, loc.y);
-// }
-// cxy cBox::bottomleft() const
-// {
-//     return cxy(loc.x, loc.y + wh.y);
-// }
-
 sQuadrant::sQuadrant()
 {
     clear();
@@ -95,10 +21,11 @@ void sQuadrant::clear()
 {
     myBoxes.clear();
     E.setSize(1000, 1000);
-    // mySpaces.clear();
-    // cBox sp(1000, 1000);
-    // sp.locate(0, 0);
-    // mySpaces.push_back(sp);
+}
+
+void sQuadrant::bestSpaceAlgo( raven::pack::cEngine::eBestSpaceAlgo algo )
+{
+    E.setBestSpaceAlgo( algo );
 }
 
 // int sQuadrant::findBestSpace(const cBox &box)
@@ -153,35 +80,10 @@ void sQuadrant::clear()
 //         }
 //     }
 
-//     return bestSpaceIndex;
-// }
 
-// void sQuadrant::splitSpace(
-//     int ispace,
-//     const cBox &box)
-// {
-//     cBox &sp0 = mySpaces[ispace];
-//     cBox sp1(sp0.wh.x - box.wh.x, box.wh.y);
-//     sp1.locate(sp0.loc.x + box.wh.x, sp0.loc.y);
-//     cBox sp2(sp0.wh.x, sp0.wh.y - box.wh.y);
-//     sp2.locate(sp0.loc.x, sp0.loc.y + box.wh.y);
-//     mySpaces.push_back(sp1);
-//     mySpaces.push_back(sp2);
-//     // mySpaces.erase(space);
-//     mySpaces[ispace].loc.x = -1;
-// }
 void sQuadrant::pack(raven::pack::cItem &box)
 {
     E.pack(box);
-    // find index of space where the box will fit
-    // int space = findBestSpace(box);
-
-    // // move the box into the space
-    // box.locate(mySpaces[space]);
-
-    // // split the space into two smaller spaces
-    // // one to the right, one below
-    // splitSpace(space, box);
 
     /* Add the box to the quadrant
 
@@ -249,7 +151,7 @@ void sQuadrant::rotate(int index)
         {
             cxy tr = topright(B);
             B.move(tr.y, -tr.x);
-            temp = B.loc.x;
+            temp = B.wlh.x;
             B.wlh.x = B.wlh.y;
             B.wlh.y = temp;
         }
@@ -265,7 +167,7 @@ void sQuadrant::rotate(int index)
         {
             cxy bl = bottomleft(B);
             B.move(-bl.y, bl.x);
-            temp = B.loc.x;
+            temp = B.wlh.x;
             B.wlh.x = B.wlh.y;
             B.wlh.y = temp;
         }
@@ -321,11 +223,11 @@ void sProblem::genRandom(int min, int max, int count)
     }
 }
 
-sProblem::eBestSpace sProblem::myBestSpace;
+raven::pack::cEngine::eBestSpaceAlgo sProblem::myBestSpace;
 
 sProblem::sProblem()
 {
-    myBestSpace = eBestSpace::firstFit;
+    myBestSpace = raven::pack::cEngine::eBestSpaceAlgo::firstFit;
 
     // construct 4 quadrants around central point
     myQuads.resize(4);
@@ -352,8 +254,10 @@ void sProblem::pack()
 
     // clear the quadrants
 
-    for (auto &q : myQuads)
+    for (auto &q : myQuads) {
         q.clear();
+        q.bestSpaceAlgo( myBestSpace);
+    }
 
     /* Pack boxes, round robin fashion, into each quadrant
 
