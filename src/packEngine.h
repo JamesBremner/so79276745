@@ -67,6 +67,9 @@ namespace raven
             {
                 // find index of space where the box will fit
                 int space = findBestSpace(item);
+                if( space < 0 )
+                    throw std::runtime_error(
+                        "No space for item"                    );
 
                 // move the box into the space
                 item.move(mySpaces[space]);
@@ -98,18 +101,19 @@ namespace raven
             }
             int findBestSpace(const cItem &item)
             {
-                int bestSpaceIndex = 0;
+                int bestSpaceIndex = -1;
 
                 for (int s = 0; s < mySpaces.size(); s++)
                 {
                     // check for remains of a split space
-                    if (mySpaces[s].wlh.x < 0)
+                    if (mySpaces[s].loc.x < 0)
                         continue;
                     // check that space is tall enough for box
                     if (mySpaces[s].wlh.y < item.wlh.y)
                         continue;
 
                     bestSpaceIndex = s;
+                    return bestSpaceIndex;  // return first fit
                 }
                 return bestSpaceIndex;
             }
